@@ -34,6 +34,8 @@ public class ScoreBoardService {
         };
     }
 
+    public void updateScore(Game game, int homeScore, int awayScore) {}
+
     public Map<Game, Score> gamesSummary() {
         return games;
     }

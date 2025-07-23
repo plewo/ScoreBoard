@@ -80,4 +80,31 @@ class ScoreBoardServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> scoreBoardService.finishGame(notStartedGame));
     }
+
+    @Test
+    void shouldUpdateScoreWithValidArguments() {
+        String homeTeam = "Liverpool", awayTeam = "Manchester United";
+        Game startedGame = scoreBoardService.startGame(homeTeam, awayTeam);
+        final int expectedHomeScore = 1, expectedAwayScore = 2;
+
+        scoreBoardService.updateScore(startedGame, expectedHomeScore, expectedAwayScore);
+        Map<Game, Score> gamesSummary = scoreBoardService.gamesSummary();
+        Score startedScore = gamesSummary.get(startedGame);
+
+        assertEquals(expectedHomeScore, startedScore.homeScore());
+        assertEquals(expectedAwayScore, startedScore.awayScore());
+    }
+
+    @Test
+    void shouldFailWhenTryingToUpdateScoreWithNegativeScore() {
+        String homeTeam = "Liverpool", awayTeam = "Manchester United";
+        Game startedGame = scoreBoardService.startGame(homeTeam, awayTeam);
+
+        assertThrows(IllegalArgumentException.class, () -> scoreBoardService.updateScore(startedGame, -1, 2));
+    }
+
+    @Test
+    void shouldFailWhenTryingToUpdateScoreWithNonExistingGame() {
+        assertThrows(IllegalArgumentException.class, () -> scoreBoardService.updateScore(null, 1, 2));
+    }
 }
