@@ -66,6 +66,7 @@ class ScoreBoardServiceTest {
         Map<Game, Score> gamesSummary = scoreBoardService.gamesSummary();
 
         assertFalse(gamesSummary.containsKey(startedGame));
+        assertEquals(0, gamesSummary.size());
     }
 
     @Test
@@ -76,7 +77,7 @@ class ScoreBoardServiceTest {
     @Test
     void shouldFailWhenTryingToFinishNotStartedGame() {
         Game notStartedGame = new Game("Liverpool", "Manchester United");
-        
+
         assertThrows(IllegalArgumentException.class, () -> scoreBoardService.finishGame(notStartedGame));
     }
 }

@@ -24,7 +24,15 @@ public class ScoreBoardService {
         return newGame;
     }
 
-    public void finishGame(Game game) { }
+    public void finishGame(Game game) {
+        if (game == null) {
+            throw new IllegalArgumentException("Game cannot be null");
+        }
+
+        if(games.remove(game) == null) {
+            throw new IllegalArgumentException("Game has not been started");
+        };
+    }
 
     public Map<Game, Score> gamesSummary() {
         return games;
