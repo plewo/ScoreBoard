@@ -38,6 +38,17 @@ public class ScoreBoardService {
     }
 
     public List<Summary> gamesSummary() {
-        return games.entrySet().stream().map(entry -> new Summary(entry.getKey(), entry.getValue())).toList();
+        return games.entrySet().stream()
+                .sorted((e1, e2) -> {
+                    int cmpBySummaryScoreDesc = Integer.compare(e2.getValue().summaryScore(), e1.getValue().summaryScore());
+
+                    if(cmpBySummaryScoreDesc != 0) {
+                        return cmpBySummaryScoreDesc;
+                    };
+
+                    return Long.compare(e2.getKey().startTimestamp(), e1.getKey().startTimestamp());
+                })
+                .map(entry -> new Summary(entry.getKey(), entry.getValue()))
+                .toList();
     }
 }

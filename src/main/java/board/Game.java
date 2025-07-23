@@ -1,7 +1,11 @@
 package board;
 
-public record Game(String homeTeam, String awayTeam) {
+public record Game(String homeTeam, String awayTeam, Long startTimestamp) {
     public Game(String homeTeam, String awayTeam) {
+        this(homeTeam, awayTeam, System.currentTimeMillis());
+    }
+
+    public Game(String homeTeam, String awayTeam, Long startTimestamp) {
         if (homeTeam == null || awayTeam == null) {
             throw new IllegalArgumentException("Home and away team names cannot be null");
         }
@@ -16,5 +20,6 @@ public record Game(String homeTeam, String awayTeam) {
 
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
+        this.startTimestamp = startTimestamp;
     }
 }
