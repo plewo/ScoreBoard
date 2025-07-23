@@ -34,7 +34,23 @@ public class ScoreBoardService {
         };
     }
 
-    public void updateScore(Game game, int homeScore, int awayScore) {}
+    public void updateScore(Game game, int homeScore, int awayScore) {
+        if (game == null) {
+            throw new IllegalArgumentException("Game cannot be null");
+        }
+
+        if (homeScore < 0 || awayScore < 0) {
+            throw new IllegalArgumentException("Score cannot be negative");
+        }
+
+        Score gameScore = games.get(game);
+
+        if (gameScore == null) {
+            throw new IllegalArgumentException("Game has not been started");
+        }
+
+        gameScore.updateScore(homeScore, awayScore);
+    }
 
     public Map<Game, Score> gamesSummary() {
         return games;

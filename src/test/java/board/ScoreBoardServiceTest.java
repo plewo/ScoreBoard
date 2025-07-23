@@ -106,5 +106,6 @@ class ScoreBoardServiceTest {
     @Test
     void shouldFailWhenTryingToUpdateScoreWithNonExistingGame() {
         assertThrows(IllegalArgumentException.class, () -> scoreBoardService.updateScore(null, 1, 2));
+        assertThrows(IllegalArgumentException.class, () -> scoreBoardService.updateScore(new Game("Liverpool", "Manchester United"), 1, 2));
     }
 }
