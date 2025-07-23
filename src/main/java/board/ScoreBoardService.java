@@ -1,11 +1,9 @@
 package board;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ScoreBoardService {
-    Map<Game, Score> games = new HashMap<>();
+    private final LinkedHashMap<Game, Score> games = new LinkedHashMap<>();
 
     public Game startGame(String homeTeam, String awayTeam) {
         Game newGame = new Game(homeTeam, awayTeam);
@@ -38,16 +36,8 @@ public class ScoreBoardService {
     }
 
     public List<Summary> gamesSummary() {
-        return games.entrySet().stream()
-                .sorted((e1, e2) -> {
-                    int cmpBySummaryScoreDesc = Integer.compare(e2.getValue().summaryScore(), e1.getValue().summaryScore());
-
-                    if(cmpBySummaryScoreDesc != 0) {
-                        return cmpBySummaryScoreDesc;
-                    };
-
-                    return Long.compare(e2.getKey().startTimestamp(), e1.getKey().startTimestamp());
-                })
+        return games.reversed().sequencedEntrySet().stream()
+                .sorted((e1, e2) -> Integer.compare(e2.getValue().summaryScore(), e1.getValue().summaryScore()))
                 .map(entry -> new Summary(entry.getKey(), entry.getValue()))
                 .toList();
     }
