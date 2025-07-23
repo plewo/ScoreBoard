@@ -12,6 +12,10 @@ public class Score {
         away = awayScore;
     }
 
+    public int summaryScore() {
+        return home + away;
+    }
+
     public int homeScore() { return home; }
     public int awayScore() { return away; }
 }

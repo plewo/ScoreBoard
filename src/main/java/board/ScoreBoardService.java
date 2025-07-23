@@ -1,6 +1,7 @@
 package board;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ScoreBoardService {
@@ -36,7 +37,7 @@ public class ScoreBoardService {
         gameScore.updateScore(homeScore, awayScore);
     }
 
-    public Map<Game, Score> gamesSummary() {
-        return games;
+    public List<Summary> gamesSummary() {
+        return games.entrySet().stream().map(entry -> new Summary(entry.getKey(), entry.getValue())).toList();
     }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,8 +22,8 @@ class ScoreBoardServiceTest {
         String homeTeam = "Liverpool", awayTeam = "Manchester United";
 
         scoreBoardService.startGame(homeTeam, awayTeam);
-        List<Game> gamesSummary = scoreBoardService.gamesSummary().keySet().stream().toList();
-        Game startedGame = gamesSummary.getFirst();
+        List<Summary> gamesSummary = scoreBoardService.gamesSummary();
+        Game startedGame = gamesSummary.getFirst().game();
 
         assertEquals(1, gamesSummary.size());
         assertEquals(homeTeam, startedGame.homeTeam());
@@ -33,10 +34,10 @@ class ScoreBoardServiceTest {
     void shouldStartGameWithInitialScore() {
         String homeTeam = "Liverpool", awayTeam = "Manchester United";
         final int expectedHomeScore = 0, expectedAwayScore = 0;
-        Game startedGame = scoreBoardService.startGame(homeTeam, awayTeam);
+        scoreBoardService.startGame(homeTeam, awayTeam);
 
-        Map<Game, Score> gamesSummary = scoreBoardService.gamesSummary();
-        Score startedScore = gamesSummary.get(startedGame);
+        List<Summary> gamesSummary = scoreBoardService.gamesSummary();
+        Score startedScore = gamesSummary.getFirst().score();
 
         assertEquals(expectedHomeScore, startedScore.homeScore());
         assertEquals(expectedAwayScore, startedScore.awayScore());
@@ -63,10 +64,10 @@ class ScoreBoardServiceTest {
         Game startedGame = scoreBoardService.startGame(homeTeam, awayTeam);
 
         scoreBoardService.finishGame(startedGame);
-        Map<Game, Score> gamesSummary = scoreBoardService.gamesSummary();
+        List<Game> liveGames = scoreBoardService.gamesSummary().stream().map(Summary::game).toList();
 
-        assertFalse(gamesSummary.containsKey(startedGame));
-        assertEquals(0, gamesSummary.size());
+        assertFalse(liveGames.contains(startedGame));
+        assertEquals(0, liveGames.size());
     }
 
     @Test
@@ -88,11 +89,11 @@ class ScoreBoardServiceTest {
         final int expectedHomeScore = 1, expectedAwayScore = 2;
 
         scoreBoardService.updateScore(startedGame, expectedHomeScore, expectedAwayScore);
-        Map<Game, Score> gamesSummary = scoreBoardService.gamesSummary();
-        Score startedScore = gamesSummary.get(startedGame);
+        Summary gameSummary = scoreBoardService.gamesSummary().getFirst();
 
-        assertEquals(expectedHomeScore, startedScore.homeScore());
-        assertEquals(expectedAwayScore, startedScore.awayScore());
+        assertEquals(startedGame, gameSummary.game());
+        assertEquals(expectedHomeScore, gameSummary.score().homeScore());
+        assertEquals(expectedAwayScore, gameSummary.score().awayScore());
     }
 
     @Test
@@ -107,5 +108,41 @@ class ScoreBoardServiceTest {
     void shouldFailWhenTryingToUpdateScoreWithNonExistingGame() {
         assertThrows(IllegalArgumentException.class, () -> scoreBoardService.updateScore(null, 1, 2));
         assertThrows(IllegalArgumentException.class, () -> scoreBoardService.updateScore(new Game("Liverpool", "Manchester United"), 1, 2));
+    }
+
+    @Test
+    void summaryShouldContainOnlyStartedGames() {
+        Game started = scoreBoardService.startGame("Liverpool", "Manchester United");
+        Game notStarted = new Game("Real Madrid", "FC Barcelona");
+
+        List<Game> startedGames = scoreBoardService.gamesSummary().stream().map(Summary::game).toList();
+
+        assertFalse(startedGames.contains(notStarted));
+        assertTrue(startedGames.contains(started));
+    }
+
+    @Test
+    void summaryShouldBeSortedBySummaryScoreDescending() {
+        Game started1 = scoreBoardService.startGame("Liverpool", "Manchester United");
+        Game started2 = scoreBoardService.startGame("Real Madrid", "FC Barcelona");
+
+        scoreBoardService.updateScore(started2, 0, 1);
+
+        List<Summary> gamesSummary = scoreBoardService.gamesSummary();
+
+        assertEquals(started2, gamesSummary.getFirst().game());
+        assertEquals(started1, gamesSummary.getLast().game());
+    }
+
+    @Test
+    void moreRecentGameOccursEarlierWhenSummaryScoreIsTheSame() {
+        Game firstAdded = scoreBoardService.startGame("Liverpool", "Manchester United");
+        Game secondAdded = scoreBoardService.startGame("Real Madrid", "FC Barcelona");
+
+        List<Summary> gamesSummary = scoreBoardService.gamesSummary();
+
+        assertEquals(gamesSummary.getFirst().score().summaryScore(), gamesSummary.getLast().score().summaryScore());
+        assertEquals(secondAdded, gamesSummary.getFirst().game());
+        assertEquals(firstAdded, gamesSummary.getLast().game());
     }
 }
