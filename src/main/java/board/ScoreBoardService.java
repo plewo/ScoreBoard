@@ -1,8 +1,29 @@
 package board;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ScoreBoardService {
-    public void startGame(String homeTeam, String awayTeam) { }
-    public List<Game> gamesSummary() { return null; }
+    Map<Game, Score> games = new HashMap<>();
+
+    public Game startGame(String homeTeam, String awayTeam) {
+        if (homeTeam == null || awayTeam == null) {
+            throw new IllegalArgumentException("Home and away team names cannot be null");
+        }
+
+        if (homeTeam.isBlank() || awayTeam.isBlank()) {
+            throw new IllegalArgumentException("Home and away team names cannot be empty");
+        }
+
+        if (homeTeam.equals(awayTeam)) {
+            throw new IllegalArgumentException("Home and away team names cannot be the same");
+        }
+
+        Game newGame = new Game(homeTeam, awayTeam);
+        games.put(newGame, new Score());
+        return newGame;
+    }
+    public Map<Game, Score> gamesSummary() {
+        return games;
+    }
 }

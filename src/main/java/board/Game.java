@@ -1,4 +1,4 @@
 package board;
 
-public record Game() {
+public record Game(String homeTeam, String awayTeam) {
 }
