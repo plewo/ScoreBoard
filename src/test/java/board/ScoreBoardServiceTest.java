@@ -56,4 +56,27 @@ class ScoreBoardServiceTest {
     void shouldNotStartGameWithEmptyStrings() {
         assertThrows(IllegalArgumentException.class, () -> scoreBoardService.startGame(" ", "Manchester United"));
     }
+
+    @Test
+    void shouldRemoveGameFromSummaryWhenGameFinished() {
+        String homeTeam = "Liverpool", awayTeam = "Manchester United";
+        Game startedGame = scoreBoardService.startGame(homeTeam, awayTeam);
+
+        scoreBoardService.finishGame(startedGame);
+        Map<Game, Score> gamesSummary = scoreBoardService.gamesSummary();
+
+        assertFalse(gamesSummary.containsKey(startedGame));
+    }
+
+    @Test
+    void shouldFailWhenTryingToFinishUnknownGame() {
+        assertThrows(IllegalArgumentException.class, () -> scoreBoardService.finishGame(null));
+    }
+
+    @Test
+    void shouldFailWhenTryingToFinishNotStartedGame() {
+        Game notStartedGame = new Game("Liverpool", "Manchester United");
+        
+        assertThrows(IllegalArgumentException.class, () -> scoreBoardService.finishGame(notStartedGame));
+    }
 }

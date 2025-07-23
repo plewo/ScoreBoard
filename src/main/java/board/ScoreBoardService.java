@@ -23,6 +23,9 @@ public class ScoreBoardService {
         games.put(newGame, new Score());
         return newGame;
     }
+
+    public void finishGame(Game game) { }
+
     public Map<Game, Score> gamesSummary() {
         return games;
     }
